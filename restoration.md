@@ -47,7 +47,7 @@ The 6540 ROM pinout is shown in Figure 2.  To verify the ROMs, I will use an Ard
 I'm using my Nucleo F207ZG board to do ROM testing.  Due to the fact that not all pins are easy to get to, I'm going to use PortE 2-12 for the address lines A0-A10 and PortD 0-7 for the D0-D7 lines.  All chip selects will be hardwired and the 02 (clock) line will be PB8.  Since it's a 300ns chip, I might need to add some delay.  I will use a 1us delay, which should be more than enough to allow me to read the contents of the ROM.  The ROM will be powered from +5VDC, but will be controlled via I/O at 3.3V, since that's what's used for the development board I'm using.  This works because the old TTL stuff only needed +2.0V or greater for `1`.  All of the ports on my development board are 5V tolerant as long as the pull-up and pull-down resistors are disabled.
 
 
-|  Nucleo board |||  6540 ROM  |
+|  Nucleo board | | |  6540 ROM  |
 |----|-----|------|------|-----|
 | CN | Pin | Desc | Desc | pin |
 |----|-----|------|------|-----|
@@ -429,7 +429,7 @@ First, we'll write a program to dump the ROM contents.  I might make this a bit 
 I think that the commands I want to implement should be as shown in the table below:
 
 | command | letter | arguments  |
-|---------+--------+------------|
+|---------|--------|------------|
 | compare |    c   | range addr |
 | dump    |    d   | range      |
 | fill    |    f   | range list |
@@ -455,7 +455,7 @@ Note that a *range* is a pair of addresses and that if it's a ROM address range 
 In making this code a little simpler, it seems that all that's actually needed is a subset of the commands listed above.  Specifically the following commands are implemented:
 
 | command | letter | action                       |
-|---------+--------+------------------------------|
+|---------|--------|------------------------------|
 | crc     |    c   | calculate CRC of buffer      |
 | dump    |    d   | dump buffer to stdout        |
 | file    |    f   | load file into RAM           |
