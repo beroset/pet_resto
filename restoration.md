@@ -345,4 +345,127 @@ Since these are 1K x 4 bit RAM, B and S clearly have some stuck bits.  In partic
 ## Preliminary Results
 I have ordered 4 new 6550 chips (new old stock) from a guy on Ebay and have also ordered a board that sits between the 6502 and the socket and effectively replaces the stock ROM and RAM with modern-ish replacements.  I think I will probably wait until I receive that to complete the restoration.
 
+### Character ROM replacement
+The character ROM can't be supplemented with the board mentioned above, so other means will be necessary.  I found some 2732s in my junk drawer and might also be able to find a 2716 or two, so either of those is a possible replacement.  A table of pinout equivalents is shown below, and the 24-pin 2732 maps nicely to the 28-pin 6540 except for one issue - the sense of the clock is inverted.  That is, while `CLK` (02) is high for a read of the 6540, `#G` must be low for a read of a 2732A so minimally, we'll need an inverter.  The typical way to do this, however, is to use a 74LS138 (5-line to 8-line decoder) to decode all address lines.  The simple way to do this is to connect CS1 to A, CS2 to B, #CS3 to C, #CS4 to G2A, #CS5 to G2B and then use the output Y3 to drive #G (pin 20) on the 2732.
 
+
+| 2732A   | | 6540       || 74LS138    |
+|-----|------|-----|------|-----|------|
+| pin | name | pin | name | pin | name |
+|-----|------|-----|------|-----|------|
+|  12 |  Vss |   1 |  Vss |   8 |  GND |
+|     |      |   2 | #CS5 |   5 | #G2B |
+|     |      |   3 | #CS4 |   4 | #G2A |
+|     |      |   4 | #CS3 |   3 |    C |
+|   8 |   A0 |   5 |   A0 |     |      |
+|   7 |   A1 |   6 |   A1 |     |      |
+|   6 |   A2 |   7 |   A2 |     |      |
+|   5 |   A3 |   8 |   A3 |     |      |
+|   4 |   A4 |   9 |   A4 |     |      |
+|   3 |   A5 |  10 |   A5 |     |      |
+|  22 |   A9 |  11 |   A9 |     |      |
+|  24 |  Vcc |  12 |  Vdd |     |      |
+|  23 |   A8 |  13 |   A8 |     |      |
+|   1 |   A7 |  14 |   A7 |     |      |
+|   2 |   A6 |  15 |   A6 |     |      |
+|     |      |  16 |  CLK |   6 |   G1 |
+|     |      |  17 |  CS1 |   1 |    A |
+|  19 |  A10 |  18 |  A10 |     |      |
+|  17 |   D7 |  19 |   D7 |     |      |
+|  16 |   D6 |  20 |   D6 |     |      |
+|  15 |   D5 |  21 |   D5 |     |      |
+|  14 |   D4 |  22 |   D4 |     |      |
+|  13 |   D3 |  23 |   D3 |     |      |
+|  11 |   D2 |  24 |   D2 |     |      |
+|  10 |   D1 |  25 |   D1 |     |      |
+|   9 |   D0 |  26 |   D0 |     |      |
+|     |      |  27 |  CS2 |   2 |    B |
+|     |      |  28 |   NC |     |      |
+|  18 |   #E |   1 |  Vss |   8 |  GND |
+|  20 |   #G |   1 |  Vss |   8 |  GND |
+|  21 |  A11 |   1 |  Vss |   8 |  GND |
+
+### Programming a 2764A
+Since I was able to locate some 2764A chips, so I'll use that.  Since it is a 8K x 8 device and the original 6540 is a 2K x 8 device, I'll have room for four copies.  What I think I will do is program the US character set in the top half and the German character set in the bottom half so that I can switch by just changing a jumper that would go to the A12 line of the EEPROM.  Pointless, sure, but *something* needs be put in there, so it may as well be something marginally useful.  My old EEPROM programmer is a Jameco PC card that is currently installed in an old computer.  Unfortunately, everything old enough to have a ISA slot is also too old to run any recent version of Linux, and I can't find the DOS-based software anyway, so I think the least effort path is simply creating a new circuit to do the job.
+
+### The approach
+Since I have a few 2764s, including at least one I know is not erased, I'll first modify the 6540 ROM reader above to create a 2764 reader.  Next will be to apply an external +12.5V Vpp and program and verify the ROM.
+
+
+|  Nucleo board |||  2764 ROM  |
+|----|-----|------|------|-----|
+| CN | Pin | Desc | Desc | pin |
+|----|-----|------|------|-----|
+|  9 |  14 | PE2  |  A0  | 10  |
+|  9 |  22 | PE3  |  A1  |  9  |
+|  9 |  16 | PE4  |  A2  |  8  |
+|  9 |  18 | PE5  |  A3  |  7  |
+|  9 |  20 | PE6  |  A4  |  6  |
+| 10 |  20 | PE7  |  A5  |  5  |
+| 10 |  18 | PE8  |  A6  |  4  |
+| 10 |   4 | PE9  |  A7  |  3  |
+| 10 |  24 | PE10 |  A8  | 25  |
+| 10 |   6 | PE11 |  A9  | 24  |
+| 10 |  26 | PE12 |  A10 | 21  |
+| 10 |  10 | PE13 |  A11 | 23  |
+| 10 |  28 | PE14 |  A12 |  2  |
+|  9 |  25 | PD0  |  D0  | 11  |
+|  9 |  27 | PD1  |  D1  | 12  |
+|  8 |  12 | PD2  |  D2  | 13  |
+|  9 |  10 | PD3  |  D3  | 15  |
+|  9 |   8 | PD4  |  D4  | 16  |
+|  9 |   6 | PD5  |  D5  | 17  |
+|  9 |   4 | PD6  |  D6  | 18  |
+|  9 |   2 | PD7  |  D7  | 19  |
+|  8 |   9 | +5V  |  Vcc | 28  |
+|  8 |  13 | GND  |  Vss | 14  |
+|  7 |   2 | PB8  |   #G | 22  |
+|  7 |   4 | PB9  |   #E | 20  |
+|  7 |   3 | PB15 |   #P | 27  |
+
+First, we'll write a program to dump the ROM contents.  I might make this a bit smarter than the previous version and have a DDT-style interface to allow for a little better user interface.  Also, in anticipation of needing to have the contents of the ROM entirely in the memory of the ARM processor before programming, I'll allocate an 8K buffer for it and use that.  
+
+#### Commands
+I think that the commands I want to implement should be as shown in the table below:
+
+| command | letter | arguments  |
+|---------+--------+------------|
+| compare |    c   | range addr |
+| dump    |    d   | range      |
+| fill    |    f   | range list |
+| load    |    l   | addr       |
+| move    |    m   | range addr |
+| search  |    s   | range list |
+| crc     |    x   | range      |
+
+Since there are actually two address ranges (buffer and ROM), I'll use an `r` prefix for any address or range to indicate the ROM.  For the dump output format, the addresses will all be 6-digit hex followed by a colon and up to 16 pairs of hex digits to show the content.  I may as well also put the ASCII equivalents to the right.  So for example, the command:
+
+    d r1fe0 1ffe
+
+Might result in this output:
+
+```
+001fe0: 30 0a 46 c1 a0 03 00 01 06 00 f2 d5 15 22 41 d3  0.F.........."A.
+001ff0: 1a e9 00 00 00 00 49 45 4e 44 ae 42 60 82        ......IEND.B`.
+```
+
+Note that a *range* is a pair of addresses and that if it's a ROM address range the `r` prefix need only appear for the first number in the range and is implicit in the second.
+
+#### Redesign
+In making this code a little simpler, it seems that all that's actually needed is a subset of the commands listed above.  Specifically the following commands are implemented:
+
+| command | letter | action                       |
+|---------+--------+------------------------------|
+| crc     |    c   | calculate CRC of buffer      |
+| dump    |    d   | dump buffer to stdout        |
+| file    |    f   | load file into RAM           |
+| read    |    r   | copy ROM to buffer           |
+| program |    p   | program ROM with buffer data |
+| version |    v   | print version of ROMtool     |
+
+I've simplified by eliminating the arguments and by relying on a buffer to do most operations.  The CRC is the same algorithm as is used for the POSIX [`cksum`](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/cksum.html), so it uses the polynomial $$G(x)= x^{32}+x^{26}+x^{23}+x^{22}+x^{16}+x^{12}+x^{11}+x^{10}+x^{8}+x^{7}+x^{5}+x^{4}+x^{2}+ x+1$$ and appends the length of the buffer, in little-endian format using the fewest possible bytes.  That is, if the length is 0x00001234 bytes, then 0x34, 0x12 would be appended to the buffer for CRC calculation.  The seed value is 0 and the result is complemented.  
+
+For this circuit, I used an external +12.5V power supply connected to Vpp (pin 1) to program the EPROMs.  Some EPROMs need +21V, but the power supply I have handy only goes to +15V, but fortunately, I was able to find two Hitachi 2764 devices that only need +12.5V for programming.
+
+### Result
+Putting in most of the RAM except the three faulty ones (B, I, S) and a spare (R) and installing the replacement ROMs in adapters, the machine doesn't seem to boot at all.  It has an initial random screen (which is normal) and then clears the screen (which is normal) but then proceeds no further.  It should, instead, enumerate the RAM and show a message, but this does not happen.  Today, my ROM/RAM replacement board should arrive and so I'll do further troubleshooting then.
