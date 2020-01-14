@@ -8,7 +8,7 @@ I've owned my Commodore PET since 1978.  For about the last 25 years, the PET ha
 ## Symptom
 The current symptom is that the screen is all scrambled.  That is, instead of reporting "7167 BYTES FREE" as a healthy PET would, I get a scrambled screen as shown below in Figure 1. 
 
-![scrambled screen](screen_shot.jpg)
+![scrambled screen](images/screen_shot.jpg)
 
 To rectify this problem, I first tried moving RAM chips around.  I have the 18 6550 RAM chips (16 for main memory and 2 for video memory) labelled as A through S (omitting "O" because it looks too much like a zero).  It turns out that only 6 chips need to be installed in the machine for it to boot.  The two video RAM chips and only 4 of the memory chips in locations I1, J1, I2 and J2.  Initially,  the chips were I1 = A, J1 = B, I2 = C, J2 = D, C3 = E, C4 = F.  Changing to S,G,J,K,L,M produced a nearly identical display, suggesting that the problem lies elsewhere.  I am starting to suspect ROMs.
 
@@ -38,9 +38,9 @@ The 6540 ROM pinout is shown in Figure 2.  To verify the ROMs, I will use an Ard
 
  See the timing diagram in Figure 3. 
 
-![6540 ROM pinout](6540.png)
+![6540 ROM pinout](images/6540.png)
 
-![6540 timing diagram](6540_timing.png)
+![6540 timing diagram](images/6540_timing.png)
 
 
 ### ROM tester
@@ -137,7 +137,7 @@ int main()
 
 The actual rig is shown in Figure 4 with one of the ROMs under test.
 
-![ROM test rig](rom_test.jpg)
+![ROM test rig](images/rom_test.jpg)
 
 ### ROM testing results
 The ROM test showed problems with two ROMs.  The 012 ROM (C800-CFFF) and the 010 ROM (character generator).  The symptoms were slightly different for each.  For the 012 ROM, most of the contents were intact but some of the bytes were 0xff.  The bytes were always odd addresses starting at 0x41, 0x43, 0x45, 0x47, 0x49, 0x4b, 0x4d, 0x4f and 0x51 and then every 0x80 bytes after those.  For the 010 ROM, the problem was that the high half of the ROM was a copy of the low half as though the A10 address line were stuck low.  While this test discovered problems with 2 ROMs, there are a number of aspects not tested, including whether all of the CS lines actually work and whether the ROM is too slow (the Nucleo program inserts a 1us pause, while the real timing spec is 350ns).  Still, this was fruitful and I may devise a means by which a more common part could be substituted.
@@ -145,7 +145,7 @@ The ROM test showed problems with two ROMs.  The 012 ROM (C800-CFFF) and the 010
 ## RAM testing
 The 6550 SRAM chips are no longer made, but 2114 chips are still available.  They're not quite pin compatible but it's possible to make an adapter and I might actually have some 2114 chips somewhere.  The pinout is shown in Figure 5.
 
-![MOS 6550 Pinout](6550.jpg)
+![MOS 6550 Pinout](images/6550.jpg)
 
 The table below is the circuit I'll use to test the RAM chips.  The built circuit is shown below as Figure 6.
 
@@ -176,7 +176,7 @@ The table below is the circuit I'll use to test the RAM chips.  The built circui
 |  8 |   9 | +5V  |  CS1 | 21  |
 |  8 |  13 | GND  |  Vss | 22  |
 
-![MOS 6550 test circuit](ram_test.jpg)
+![MOS 6550 test circuit](images/ram_test.jpg)
 
 ### Test algorithm
 There are a number of tests that could be used, but we can start with the obvious and quick ones and refine those later if needed.  As with the ROM testing, I'm not planning on testing the CS lines or the timing, but only the most basic function of a static RAM -- does it remember what it's asked to?  To that end, I'll use a simple test regimen using the following patterns:
@@ -469,3 +469,21 @@ For this circuit, I used an external +12.5V power supply connected to Vpp (pin 1
 
 ### Result
 Putting in most of the RAM except the three faulty ones (B, I, S) and a spare (R) and installing the replacement ROMs in adapters, the machine doesn't seem to boot at all.  It has an initial random screen (which is normal) and then clears the screen (which is normal) but then proceeds no further.  It should, instead, enumerate the RAM and show a message, but this does not happen.  Today, my ROM/RAM replacement board should arrive and so I'll do further troubleshooting then.
+
+After I received my board, I determined that I may have more bad RAM than I thought.  In addition to B, I and S, it appears that A, C and possibly G are bad.  The machine boots and runs with R, F in the video RAM and K, L, M, N, P, Q, H, J, D, E installed.  It reports 4095 bytes free which is consistent with 5K installed.  Since it reports 7167 bytes free with 8K installed we calculate $8*1024 - 7167 = 1025$ and $5*1024 - 4095 = 1025$.   Successful boot screen is shown below.
+
+![successful boot](images/goodboot.jpg)
+
+## Power supply
+After the machine is on for a few seconds, I noticed a lot of "snow" on the screen and can hear the transformer buzzing.  Further investigating, the J8 Molex power connector becomes quite hot on one side, so I took it apart and discovered that the pin 1 connection was both corroded and also had some of the stranded copper wire strands broken, both leading to high resistance.  To fix that, I've ordered a replacement connector and pins, this time upgrading to gold plated connectors.
+
+## Case
+There are some rust spots on the case.  Since I'm planning on doing some automotive painting of a white car soon anyway, I'll reserve a bit of paint and also repaint the white portions of the PET at the same time.  Detail of some of the worst rust is shown in the picture below.
+
+![Some rust](images/rusty.jpg)
+
+## Keyboard
+The keyboard seems not to work at all.  
+
+## Tape drive
+The tape drive will need to be looked at, but it's very likely that the belt will need replacing and the head cleaned.
