@@ -470,12 +470,19 @@ For this circuit, I used an external +12.5V power supply connected to Vpp (pin 1
 ### Result
 Putting in most of the RAM except the three faulty ones (B, I, S) and a spare (R) and installing the replacement ROMs in adapters, the machine doesn't seem to boot at all.  It has an initial random screen (which is normal) and then clears the screen (which is normal) but then proceeds no further.  It should, instead, enumerate the RAM and show a message, but this does not happen.  Today, my ROM/RAM replacement board should arrive and so I'll do further troubleshooting then.
 
-After I received my board, I determined that I may have more bad RAM than I thought.  In addition to B, I and S, it appears that A, C and possibly G are bad.  The machine boots and runs with R, F in the video RAM and K, L, M, N, P, Q, H, J, D, E installed.  It reports 4095 bytes free which is consistent with 5K installed.  Since it reports 7167 bytes free with 8K installed we calculate $8*1024 - 7167 = 1025$ and $5*1024 - 4095 = 1025$.   Successful boot screen is shown below.
+After I received my board, I determined that I may have more bad RAM than I thought.  In addition to B, I and S, it appears that A, C and possibly G are bad.  The machine boots and runs with R, F in the video RAM and K, L, M, N, P, Q, H, J, D, E installed.  It reports 4095 bytes free which is consistent with 5K installed.  Since it reports 7167 bytes free with 8K installed we calculate $8*1024 - 7167 = 1025$ and $5*1024 - 4095 = 1025$.   Successful boot screen is shown in Figure 7 below.
 
 ![successful boot](images/goodboot.jpg)
 
 ## Power supply
-After the machine is on for a few seconds, I noticed a lot of "snow" on the screen and can hear the transformer buzzing.  Further investigating, the J8 Molex power connector becomes quite hot on one side, so I took it apart and discovered that the pin 1 connection was both corroded and also had some of the stranded copper wire strands broken, both leading to high resistance.  To fix that, I've ordered a replacement connector and pins, this time upgrading to gold plated connectors.
+After the machine is on for a few seconds, I noticed a lot of "snow" on the screen and can hear the transformer buzzing.  Further investigating, the J8 Molex power connector becomes quite hot on one side, so I took it apart and discovered that the pin 1 connection was both corroded and also had some of the stranded copper wire strands broken, both leading to high resistance.  To fix that, I've ordered a replacement connector and pins, this time upgrading to gold plated connectors.  The updated gold connectors are shown in Figure 8 below just before being inserted into the Molex connector housing.  The connector on the main board was also replaced.
+
+![shiny gold connectors](images/shiny.jpg)
+
+The power supply is a simple but robust design.  Because it doesn't appear to be explicitly shown in the schematics I have, a reproduced version of the relevant parts of the circuit are shown below in Figure 9.  Note that the connections to connector J8 are symmetric, so it doesn't matter which way the connector is attached.
+
+![PET power supply partial schematic](images/PET_power.eps)
+
 
 ## Case
 There are some rust spots on the case.  Since I'm planning on doing some automotive painting of a white car soon anyway, I'll reserve a bit of paint and also repaint the white portions of the PET at the same time.  Detail of some of the worst rust is shown in the picture below.
@@ -483,7 +490,9 @@ There are some rust spots on the case.  Since I'm planning on doing some automot
 ![Some rust](images/rusty.jpg)
 
 ## Keyboard
-The keyboard seems not to work at all.  
+The keyboard seems not to work at all.  The keyboard works via a 10 x 8 matrix.  Each key uniquely connects one of the ten rows with one of the the 8 columns.  I took the keyboard apart, used a pink pearl eraser vigourously on the copper contacts, and used some rubbing alcohol on each of the carbon buttons and reassembled it.  Every key now works perfectly.  I also soaked the fifteen tiny screws that hold the keyboard together in some white vinegar to remove some rust.
 
 ## Tape drive
-The tape drive will need to be looked at, but it's very likely that the belt will need replacing and the head cleaned.
+The tape drive will need to be looked at, but it's very likely that the belt will need replacing and the head cleaned.  Indeed, on disassembly, the belt is brittle and broken into four pieces, so new ones have been ordered.  Other than that, the mechanism looks to be in good shape.  I may add some lithium grease to the mechanism.
+
+![Broken belt](images/broken_belt.jpg)
