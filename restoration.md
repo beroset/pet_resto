@@ -1,6 +1,6 @@
 % PET restoration
 % E. Beroset
-% 2 January 2020
+% 18 January 2020
 
 # Introduction
 I've owned my Commodore PET since 1978.  For about the last 25 years, the PET hasn't worked due to one or more problems. In 2019, I diagnosed and fixed a problem with the power supply (faulty filter capacitor), but there are still other issues.  This document is a record of my attempts to fix up the old PET.
