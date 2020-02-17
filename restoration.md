@@ -492,7 +492,19 @@ There are some rust spots on the case.  Since I'm planning on doing some automot
 ## Keyboard
 The keyboard seems not to work at all.  The keyboard works via a 10 x 8 matrix.  Each key uniquely connects one of the ten rows with one of the the 8 columns.  I took the keyboard apart, used a pink pearl eraser vigourously on the copper contacts, and used some rubbing alcohol on each of the carbon buttons and reassembled it.  Every key now works perfectly.  I also soaked the fifteen tiny screws that hold the keyboard together in some white vinegar to remove some rust.
 
+I find that there two slight problems with the keyboard after a little more use.  Specifically, the right shift key and the E key don't work reliably.  
+
 ## Tape drive
 The tape drive will need to be looked at, but it's very likely that the belt will need replacing and the head cleaned.  Indeed, on disassembly, the belt is brittle and broken into four pieces, so new ones have been ordered.  Other than that, the mechanism looks to be in good shape.  I may add some lithium grease to the mechanism.
 
 ![Broken belt](images/broken_belt.jpg)
+
+After the belt was in place, I noticed that of the two screws that hold the erase head in place, one is missing.  I'm unlikely to write to new casettes, but that's an issue that should be addressed.  I was able to find that tape #15 in my collection (which is proudly a "Certified Data Cassette") works just fine and there are two programs on it that are successfully read by the PET's tape drive now that it has a new belt.
+
+## TODO
+
+ 1. fix keyboard (Right shift and E keys)
+ 2. replace missing screw for erase head
+ 3. fix intemittent connection to video (connector problem in display?)
+ 4. fix annoying vertical jitter in video
+
